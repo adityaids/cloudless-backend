@@ -143,8 +143,9 @@ class Transaction(Resource):
 		_amount = _json['amount']
 		_price = _json['price']
 		_totalPrice = _json['total_price']
+		_status = _json['status']
 		if _userId and request.method == 'POST' :
-			transaction = mongo.db.transaction.insert('user_id': _userId, 'merchant_id': _merchantId, 'product_name': _productName, 'product_image': _productImage, 'amount': _amount, 'price': _price, 'total_price': _totalPrice)
+			transaction = mongo.db.transaction.insert('user_id': _userId, 'merchant_id': _merchantId, 'product_name': _productName, 'product_image': _productImage, 'amount': _amount, 'price': _price, 'total_price': _totalPrice, 'status': _status)
 			resp = jsonify("transaction saved successfully")
             resp.status_code = 200
             return resp
