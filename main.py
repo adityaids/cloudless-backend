@@ -125,6 +125,32 @@ class Login(Resource):
                 resp.status_code = 401
                 return resp
 
+class Transaction(Resource):
+	def get(self):
+		parser = reqparse.RequestParser()
+        parser.add_argument('user_id', type=str, location='args')
+        args = parser.parse_args()
+        query = {'user_id':args['merchant_id']}
+        product = mongo.db.transaction.find(query)
+        return json.loads(dumps(product))
+
+	def post(self):
+		_json = request.json
+		_userId = _json['user_id']
+		_merchantId = _json['merchant_id']
+		_productName = _json['productName']
+		_productImage = _json['productImage']
+		_amount = _json['amount']
+		_price = _json['price']
+		_totalPrice = _json['total_price']
+		if _userId and request.method == 'POST' :
+			transaction = mongo.db.transaction.insert('user_id': _userId, 'merchant_id': _merchantId, 'product_name': _productName, 'product_image': _productImage, 'amount': _amount, 'price': _price, 'total_price': _totalPrice)
+			resp = jsonify("transaction saved successfully")
+            resp.status_code = 200
+            return resp
+		else
+			return not_found()
+
 
 api.add_resource(Banner, '/banner')
 api.add_resource(Product, '/product')
@@ -133,6 +159,7 @@ api.add_resource(Merchants, '/merchants')
 api.add_resource(Merchant, '/merchant')
 api.add_resource(User, '/user')
 api.add_resource(Login, '/login')
+api.add_resource(Transaction, '/transaction')
 
 if __name__ == '__main__':
     app.run(debug=True)
