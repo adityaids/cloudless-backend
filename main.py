@@ -57,6 +57,17 @@ class Merchant(Resource):
         merchant = mongo.db.merchant.find_one_or_404({'_id': ObjectId(args['merchant_id'])})
         return json.loads(dumps(merchant))
 
+
+def not_found():
+    message = {
+        'status' : 404,
+        'message' : 'Not Found' + request.url
+    }
+    resp = jsonify(message)
+    resp.status_code = 404
+    return resp
+
+
 class User(Resource):
     def post(self):
         _json = request.json
@@ -98,14 +109,6 @@ class User(Resource):
         else :
             return not_found()
 
-    def not_found(error=None):
-        message = {
-            'status' : 404,
-            'message' : 'Not Found' + request.url 
-        }
-        resp = jsonify(message)
-        resp.status_code = 404
-        return resp 
 
 class Login(Resource):
     def post(self):
@@ -126,31 +129,31 @@ class Login(Resource):
                 return resp
 
 class Transaction(Resource):
-	def get(self):
-		parser = reqparse.RequestParser()
+    def get(self):
+        parser = reqparse.RequestParser()
         parser.add_argument('user_id', type=str, location='args')
         args = parser.parse_args()
         query = {'user_id':args['merchant_id']}
         product = mongo.db.transaction.find(query)
         return json.loads(dumps(product))
 
-	def post(self):
-		_json = request.json
-		_userId = _json['user_id']
-		_merchantId = _json['merchant_id']
-		_productName = _json['productName']
-		_productImage = _json['productImage']
-		_amount = _json['amount']
-		_price = _json['price']
-		_totalPrice = _json['total_price']
-		_status = _json['status']
-		if _userId and request.method == 'POST' :
-			transaction = mongo.db.transaction.insert('user_id': _userId, 'merchant_id': _merchantId, 'product_name': _productName, 'product_image': _productImage, 'amount': _amount, 'price': _price, 'total_price': _totalPrice, 'status': _status)
-			resp = jsonify("transaction saved successfully")
+    def post(self):
+        _json = request.json
+        _userId = _json['user_id']
+        _merchantId = _json['merchant_id']
+        _productName = _json['productName']
+        _productImage = _json['productImage']
+        _amount = _json['amount']
+        _price = _json['price']
+        _totalPrice = _json['total_price']
+        _status = _json['status']
+        if _userId and request.method == 'POST' :
+            transaction = monggo.db.transaction.insert({repr(user_id): _userId, 'merchant_id': _merchantId, 'product_name': _productName, 'product_image': _productImage, 'amount': _amount, 'price': _price, 'total_price': _totalPrice, 'status': _status})
+            resp = jsonify("transaction saved successfully")
             resp.status_code = 200
             return resp
-		else
-			return not_found()
+        else:
+            return not_found()
 
 
 api.add_resource(Banner, '/banner')
@@ -163,4 +166,4 @@ api.add_resource(Login, '/login')
 api.add_resource(Transaction, '/transaction')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
